@@ -1,0 +1,398 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop with Marylin — Carnivalista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ground:#0D2422; --surface:#123330; --surface-2:#17403C;
+    --line:rgba(240,232,222,.16); --text:#F3EBE1; --dim:rgba(243,235,225,.62);
+    --accent:#FF6B35; --accent-ink:#14100C;
+    --display:'Syne',system-ui,sans-serif; --body:'Karla',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--ground);color:var(--text);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  .app{min-height:100vh;display:grid;grid-template-columns:290px 1fr}
+
+  .rail{background:var(--surface);border-right:1px solid var(--line);padding:32px 26px;display:flex;flex-direction:column;gap:28px}
+  .guide{display:flex;align-items:center;gap:12px}
+  .guide-face{width:48px;height:48px;border-radius:50%;background:linear-gradient(150deg,#D2A06B,#6B4229);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:19px;color:var(--accent-ink);flex-shrink:0}
+  .guide-name{font-family:var(--display);font-weight:700;font-size:16px}
+  .guide-role{font-size:11.5px;color:var(--dim);margin-top:2px}
+  .rail-label{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
+
+  .ladder{display:flex;flex-direction:column;gap:4px}
+  .rung{display:flex;align-items:center;gap:10px;padding:5px 8px;border-radius:7px;transition:opacity .45s ease,background .3s ease}
+  .rung.muted{opacity:.2}
+  .rung.picked{background:rgba(255,107,53,.14)}
+  .rung-chip{width:30px;height:22px;border-radius:3px;flex-shrink:0;object-fit:cover}
+  .rung-name{font-size:12.5px}
+  .rung.picked .rung-name{font-weight:600}
+
+  .answers{margin-top:auto;border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:8px}
+  .answer-row{font-size:12px;line-height:1.35}
+  .answer-row span{color:var(--dim);display:block}
+
+  .stage{padding:50px 56px 70px;max-width:940px}
+  .progress{height:2px;background:var(--line);margin-bottom:36px;position:relative}
+  .progress i{position:absolute;inset:0 auto 0 0;background:var(--accent);transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+  .says{font-size:14px;line-height:1.6;color:var(--dim);max-width:56ch;margin:0 0 10px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.6vw,38px);line-height:1.1;letter-spacing:-.025em;margin:0 0 30px;max-width:20ch}
+
+  .opts{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+  .opts.wide{grid-template-columns:1fr;max-width:560px}
+  .opts.tiles{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+  .opts.swatches{grid-template-columns:repeat(auto-fit,minmax(128px,1fr))}
+
+  .opt{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:0;text-align:left;color:var(--text);font-family:var(--body);cursor:pointer;overflow:hidden;transition:border-color .18s,background .18s,transform .18s}
+  .opt:hover,.opt:focus-visible{border-color:var(--accent);background:var(--surface-2);transform:translateY(-2px);outline:none}
+  .opt-body{padding:15px 17px;font-size:14.5px;font-weight:500}
+  .opt-body small{display:block;font-weight:400;font-size:12.5px;color:var(--dim);margin-top:5px;line-height:1.45}
+  .opt img{width:100%;display:block}
+  .opt.tile img{aspect-ratio:4/3;object-fit:cover}
+  .opt.swatch img{aspect-ratio:1/1;object-fit:cover;object-position:center 40%}
+  .opt.plain .opt-body{padding:17px 19px}
+
+  .back{background:none;border:none;color:var(--dim);font-family:var(--body);font-size:13px;cursor:pointer;padding:0;margin-top:30px;text-decoration:underline;text-underline-offset:3px}
+  .back:hover{color:var(--text)}
+
+  .hero-pick{display:grid;grid-template-columns:200px 1fr;gap:24px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;overflow:hidden;margin-bottom:14px}
+  .hero-pick img{width:100%;height:100%;object-fit:cover;min-height:200px}
+  .hero-copy{padding:24px 26px 24px 0}
+  .eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .pick-name{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.02em;margin:0 0 6px}
+  .price{font-size:14px;color:var(--accent);margin:0 0 10px;font-weight:600}
+  .pick-why{font-size:13.5px;line-height:1.6;color:var(--dim);margin:0}
+
+  .alts{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:28px}
+  .alt{background:var(--surface);border:1px solid var(--line);border-radius:11px;overflow:hidden}
+  .alt img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+  .alt-body{padding:14px 16px;font-size:14px;font-weight:500}
+  .alt-body small{display:block;font-weight:400;font-size:12.5px;color:var(--dim);margin-top:4px}
+
+  .cart{background:var(--surface-2);border-radius:12px;padding:22px 24px;margin-bottom:24px}
+  .cart h3{font-family:var(--display);font-size:16px;font-weight:700;margin:0 0 4px}
+  .cart-note{font-size:13.5px;color:var(--dim);line-height:1.6;margin:0 0 16px}
+  .line-item{display:flex;align-items:center;gap:14px;padding:11px 0;border-top:1px solid var(--line);font-size:14px}
+  .line-item img{width:46px;height:46px;border-radius:6px;object-fit:cover;flex-shrink:0}
+  .line-item .li-main{flex:1}
+  .line-item em{font-style:normal;color:var(--dim);font-size:12.5px;display:block;margin-top:3px;line-height:1.45}
+  .cta{display:inline-block;background:var(--accent);color:var(--accent-ink);font-family:var(--display);font-weight:700;font-size:15px;border:none;border-radius:999px;padding:14px 30px;cursor:pointer;margin-top:20px}
+
+  .spec{margin-top:32px;border-top:1px solid var(--line);padding-top:20px;font-size:12.5px;color:var(--dim);line-height:1.65;max-width:64ch}
+  .spec strong{color:var(--text);font-weight:600}
+  .spec p{margin:0 0 11px}
+
+  .imgnote{position:fixed;bottom:14px;right:14px;background:rgba(255,107,53,.94);color:#14100C;font-size:11.5px;font-weight:600;padding:9px 14px;border-radius:8px;max-width:280px;line-height:1.45;z-index:9;display:none}
+
+  @media(max-width:900px){
+    .app{grid-template-columns:1fr}
+    .rail{border-right:none;border-bottom:1px solid var(--line);padding:20px;gap:18px}
+    .ladder{flex-direction:row;flex-wrap:wrap;gap:5px}
+    .rung-name{display:none}
+    .answers{margin-top:0}
+    .stage{padding:28px 18px 60px}
+    .hero-pick{grid-template-columns:1fr}
+    .hero-pick img{aspect-ratio:16/10;min-height:0}
+    .hero-copy{padding:0 22px 22px}
+    .imgnote{left:14px;right:14px;max-width:none}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="guide">
+      <div class="guide-face">M</div>
+      <div><div class="guide-name">Marylin</div><div class="guide-role">Your shade match guide</div></div>
+    </div>
+    <div><div class="rail-label">Shade range</div><div class="ladder" id="ladder"></div></div>
+    <div class="answers" id="answers"></div>
+  </aside>
+  <main class="stage">
+    <div class="progress"><i id="bar" style="width:0%"></i></div>
+    <div id="panel"></div>
+  </main>
+</div>
+<div class="imgnote" id="imgnote">Photos blocked in this preview. Download the file and open it in your browser to see the real product imagery.</div>
+
+<script>
+const CDN='https://cdn.shopify.com/s/files/1/2357/4839/products/';
+
+/* Each asset carries a fallback colour so the layout holds
+   even where the preview sandbox refuses external requests. */
+const SHADES=[
+  {id:'vanilla',  name:'Vanilla',  fb:'#E8C4A0', img:CDN+'1_naked_vanilla_imageset.jpg?v=1580426067'},
+  {id:'honey',    name:'Honey',    fb:'#D2A06B', img:CDN+'1_naked_honey_imageset.jpg?v=1580426067'},
+  {id:'toffee',   name:'Toffee',   fb:'#B77F4E', img:CDN+'1_naked_toffee_imageset.jpg?v=1580426067'},
+  {id:'cinnamon', name:'Cinnamon', fb:'#96603A', img:CDN+'1_naked_cinnamon_imageset.jpg?v=1580426048'},
+  {id:'truffle',  name:'Truffle',  fb:'#6B4229', img:CDN+'1_naked_truffle_imageset.jpg?v=1580426048'},
+  {id:'cocoa',    name:'Cocoa',    fb:'#452A1B', img:CDN+'1_naked_cocoa_imageset.jpg?v=1580426080'},
+  {id:'liquorice',name:'Liquorice',fb:'#241A15', img:CDN+'1_black-friday-naked_liquorice_imageset.jpg?v=1731921961'}
+];
+
+const P={
+  naked:{name:'Naked',price:20,fb:'#6B4229',img:CDN+'1_black-friday-naked_liquorice_imageset.jpg?v=1731921961',line:'Matte micro-net. Blendina waistband.'},
+  sparkle:{name:'Sparkle',price:20,fb:'#8A6B3A',img:CDN+'1_sparkle_liquorice_imageset.jpg?v=1580487071',line:'Medium net with golden lurex.'},
+  diamond:{name:'Diamond',price:40,fb:'#A98546',img:CDN+'1_diamond_liquorice_imageset_eaf6b4b3-8cbc-4021-ae68-a7276b04bcd8.jpg?v=1630347664',line:'Golden lurex in a smooth micro net.'},
+  gliss:{name:'Gliss Rosé',price:40,fb:'#B08A72',img:CDN+'1_gliss_liquorice_imageset.jpg?v=1580482871',line:'Rosé crystal rhinestones on matte micro fishnet.'},
+  manakin:{name:'Manakin',price:20,fb:'#5C4030',img:CDN+'1_manakin_liquorice_imageset.jpg?v=1580486074',line:'The performance range.'},
+  cocktailM:{name:'Cocktail Medium Net',price:15,fb:'#7A3B6E',img:CDN+'COCKTAIL_MEDIUM_FirstImage_Needs_Cropping.jpg?v=1578348883',line:'Eight colours. Regular and Plus.'},
+  cocktailL:{name:'Cocktail Large Net',price:15,fb:'#2E5F8A',img:CDN+'COCKTAIL_LARGE_FirstImage_Needs_Cropping.jpg?v=1578348671',line:'Bold large net, vibrant colours.'},
+  flex:{name:'Flex Thighlet',price:80,fb:'#2A2622',img:CDN+'1_flex_matte-black-strap_imageset.jpg?v=1606424852',line:'Two zipped compartments. Stays put.'},
+  shortsD:{name:'Diamond Fishnet Shorts',price:12,fb:'#96603A',img:CDN+'SHORTS_DIAMOND_Half_Product.jpg?v=1578349176',line:'Under denim, over anything.'},
+  shortsN:{name:'Naked Fishnet Shorts',price:25,fb:'#B77F4E',img:CDN+'SHORTS_NAKED_Product.jpg?v=1578355823',line:'Smooth support, no line.'},
+  overknee:{name:'Over-Knee Stockings',price:5,fb:'#6B4229',img:CDN+'FRONT_IMAGE_OVERKNEE.jpg?v=1578356174',line:'Lace-look, six shades.'},
+  charms:{name:'Charms Arm Sleeves',price:5,fb:'#96603A',img:CDN+'Charms_Front.jpg?v=1579958342',line:'Micro net sleeves. Bedazzle base.'},
+  smoothies:{name:'Smoothies Pasties',price:10,fb:'#D2A06B',img:CDN+'SMOOTHIES_Cinnamon_Product.jpg?v=1651009072',line:'Shade-matched nipple covers.'},
+  pumps:{name:'Pumps Wristlet',price:25,fb:'#3A322C',img:CDN+'PUMPS_Front_Image.jpg?v=1580020650',line:'Phone, gloss, keys.'},
+  goggles:{name:'Spiked Goggles',price:15,fb:'#4A423A',img:CDN+'GOGGLES_Bronze_Product2.jpg?v=1578358306',line:'Steampunk and cosplay.'},
+  lowrise:{name:'Low Rise Colorful Tights',price:10,fb:'#6A3A7E',img:CDN+'Purple_SideView_Temp.png?v=1630855681',line:'Eight colours, V waistband.'},
+  hovsusp:{name:'Crystal Rhinestone Suspenders',price:5,fb:'#8A7A6A',img:CDN+'HOVSuspender1.png?v=1627219051',line:'Iridescent crystals, suspender style.'},
+  leotard:{name:'Netted Leotard',price:45,fb:'#7A5A4A',img:CDN+'Spice_Netted_Body_-_Front.jpg?v=1580332701',line:'Long sleeve, keyhole back.'}
+};
+
+/* url -> fallback colour lookup, so an option that borrows a product
+   photo also borrows its fallback */
+const FB={};
+SHADES.forEach(s=>FB[s.img]=s.fb);
+Object.values(P).forEach(p=>FB[p.img]=p.fb);
+const im=(src,cls)=>`<img ${cls?`class="${cls}" `:''}src="${src}" alt="" loading="lazy" style="background:${FB[src]||'#1a2f2c'}">`;
+
+/* If the first photo fails, surface the note once. */
+let noteShown=false;
+document.addEventListener('error',e=>{
+  if(e.target.tagName==='IMG'&&!noteShown){noteShown=true;document.getElementById('imgnote').style.display='block';}
+},true);
+
+const V={
+  carnival:{label:'Carnival',blurb:'Trinidad, Crop Over, Caribana, Miami, Notting Hill',img:P.gliss.img,
+    context:{say:"Let's start with where you're playing mas.",ask:'Which carnival are you jumping?',
+      opts:[{v:'Trinidad',note:'Carnival Monday and Tuesday'},{v:'Crop Over',note:'Grand Kadooment, Barbados'},{v:'Caribana',note:'Toronto'},{v:'Miami'},{v:'Notting Hill'},{v:'Somewhere else'}]},
+    experience:{say:'This changes how much I explain as we go.',ask:'Is this your first road experience?',
+      opts:[{v:'First time',note:"I'll walk you through what you actually need"},{v:"I've played before",note:'Straight to the good part'}]},
+    coverage:{say:'Your costume decides how much work the legwear is doing.',ask:'How much coverage is your costume?',
+      opts:[{v:'Bikini and beads',note:'Minimal. The legwear is a big part of the look',img:P.gliss.img},
+            {v:'Mid coverage',note:'Some skirt, wire bra, partial coverage',img:P.shortsD.img},
+            {v:'Full costume',note:'Monokini, bodysuit or full sectional',img:P.leotard.img},
+            {v:"Haven't seen it yet",note:'Costume launch pending. Happens to everybody',img:P.naked.img}]},
+    look:{say:'Now the fun part.',ask:'What do you want your legs to do?',
+      opts:[{v:'Disappear',note:'Shade-matched, reads as bare leg with texture',img:P.naked.img,k:'bare'},
+            {v:'Catch the light',note:'Rhinestones and lurex for road and stage',img:P.gliss.img,k:'shine'},
+            {v:'Make a statement',note:'Bold colour that competes with the costume',img:P.cocktailL.img,k:'colour'},
+            {v:'Show me both',note:"I'm undecided",img:P.sparkle.img,k:'shine'}]}},
+
+  festivals:{label:'Festivals',blurb:'EDM, soca, Afrobeats, day parties',img:P.cocktailL.img,
+    context:{say:"Let's start with the setting.",ask:'What kind of festival are you dressing for?',
+      opts:[{v:'EDM or rave'},{v:'Soca or Afrobeats'},{v:'Day party'},{v:'Multi-day camping'}]},
+    experience:{say:'Multi-day changes what I recommend on durability.',ask:'How long are you there?',
+      opts:[{v:'One day'},{v:'A weekend'},{v:'Four days or more'}]},
+    coverage:{say:'Tell me what the legwear is working with.',ask:"What's the outfit?",
+      opts:[{v:'Bodysuit or bikini',note:'Legwear is the outfit',img:P.leotard.img},
+            {v:'Shorts or mini',note:'Legwear frames the look',img:P.shortsD.img},
+            {v:'Layered',note:'Under mesh, skirt or oversize',img:P.naked.img},
+            {v:'Still planning',img:P.cocktailM.img}]},
+    look:{say:'And the vibe.',ask:'What do you want your legs to do?',
+      opts:[{v:'Make a statement',note:'Bold colour, high contrast',img:P.cocktailL.img,k:'colour'},
+            {v:'Catch the light',note:'Shimmer under stage lighting',img:P.sparkle.img,k:'shine'},
+            {v:'Disappear',note:'Shade-matched, no colour break',img:P.naked.img,k:'bare'},
+            {v:'Show me both',img:P.lowrise.img,k:'colour'}]}},
+
+  cosplay:{label:'Cosplay',blurb:'Con builds, character accuracy, photoshoots',img:P.lowrise.img,
+    context:{say:'Accuracy usually drives the shade choice here.',ask:'What are you building for?',
+      opts:[{v:'A convention'},{v:'A photoshoot'},{v:'A competition build'},{v:'Just for me'}]},
+    experience:{say:'This tells me how technical to get.',ask:'How deep are you into this?',
+      opts:[{v:'First build'},{v:'A few under my belt'},{v:'I build seriously'}]},
+    coverage:{say:'Legwear does different jobs in different builds.',ask:'What is the legwear doing?',
+      opts:[{v:'Reading as skin',note:'Seamless under a leg-baring costume',img:P.naked.img},
+            {v:'Part of the character',note:'Visible, canonical to the design',img:P.cocktailL.img},
+            {v:'Base layer',note:'Under armour, boots or plates',img:P.manakin.img},
+            {v:'Still designing',img:P.goggles.img}]},
+    look:{say:'And how it should photograph.',ask:'What finish are you after?',
+      opts:[{v:'Make a statement',note:'Colour that holds up in photos',img:P.cocktailL.img,k:'colour'},
+            {v:'Disappear',note:'Shade-matched so the camera reads bare leg',img:P.naked.img,k:'bare'},
+            {v:'Catch the light',note:'Crystals for flash and studio light',img:P.hovsusp.img,k:'shine'},
+            {v:'Show me both',img:P.lowrise.img,k:'colour'}]}},
+
+  drag:{label:'Drag & Ballroom',blurb:'Stage, balls, performance, runway',img:P.manakin.img,
+    context:{say:'Stage and ball floors ask different things of a leg.',ask:'Where are you performing?',
+      opts:[{v:'A ball'},{v:'Club or stage'},{v:'Runway or editorial'},{v:'Touring'}]},
+    experience:{say:'Movement load matters for durability, and Manakin exists for exactly this.',ask:'How physical is the number?',
+      opts:[{v:'Full choreography',note:'Dips, drops, floor work'},{v:'Moderate'},{v:'Presentation and posing'}]},
+    coverage:{say:'And the garment.',ask:"What's the look built on?",
+      opts:[{v:'Leotard or bodysuit',img:P.leotard.img},{v:'Gown with a slit',img:P.naked.img},
+            {v:'Short and leg-forward',img:P.shortsN.img},{v:'Still building',img:P.manakin.img}]},
+    look:{say:'Now the finish.',ask:'What should the legs read as?',
+      opts:[{v:'Catch the light',note:'Rhinestones that carry from the back row',img:P.gliss.img,k:'shine'},
+            {v:'Bare and flawless',note:'Shade-matched illusion under lights',img:P.naked.img,k:'bare'},
+            {v:'Make a statement',note:'Colour, full commitment',img:P.cocktailL.img,k:'colour'},
+            {v:'Show me both',img:P.diamond.img,k:'shine'}]}},
+
+  halloween:{label:'Halloween',blurb:'Costume parties, October events',img:P.hovsusp.img,
+    context:{say:'Halloween is a short season so let me be quick.',ask:"What's the occasion?",
+      opts:[{v:'A party'},{v:'A costume contest'},{v:'Bar or club night'},{v:'Multiple events'}]},
+    experience:{say:'October gets cold in a lot of places.',ask:'Indoors or outdoors?',
+      opts:[{v:'Mostly indoors'},{v:'Mostly outdoors'},{v:'Both'}]},
+    coverage:{say:'Tell me about the costume.',ask:'How much leg is showing?',
+      opts:[{v:'A lot',img:P.gliss.img},{v:'Some',img:P.shortsD.img},{v:'Barely any',img:P.overknee.img},{v:'Undecided',img:P.naked.img}]},
+    look:{say:'And the effect.',ask:'What do you want your legs to do?',
+      opts:[{v:'Make a statement',note:'Bold colour',img:P.cocktailL.img,k:'colour'},
+            {v:'Catch the light',note:'Crystals and shimmer',img:P.hovsusp.img,k:'shine'},
+            {v:'Disappear',note:'Shade-matched under a leg-baring costume',img:P.naked.img,k:'bare'},
+            {v:'Show me both',img:P.sparkle.img,k:'shine'}]}}
+};
+
+const TRADE={label:'Bar & Hospitality',blurb:'Venue uniforms, team orders, invoice terms',img:P.naked.img,
+  steps:[
+    {say:'Team orders work differently, so this is short.',ask:'What kind of venue?',key:'Venue',
+      opts:[{v:'Cocktail bar'},{v:'Nightclub'},{v:'Restaurant'},{v:'Hotel or events'}]},
+    {say:'This sets your price break.',ask:'How many people are you outfitting?',key:'Team size',
+      opts:[{v:'Under 10'},{v:'10 to 25'},{v:'25 to 50'},{v:'50 or more'}]},
+    {say:'This is the part most uniform suppliers get wrong.',ask:'How many shades across the team?',key:'Shade spread',
+      opts:[{v:'The full range',note:'Every person matched to their own shade'},{v:'A few shades',note:"I'll specify per person"},
+            {v:'One shade',note:'Uniform look across the team'},{v:'Not sure yet',note:'Talk me through it'}]}]};
+
+const SIZES=[{v:'Petite',note:'Shorter rise'},{v:'Regular',note:'½" Blendina waistband'},{v:'Plus Size',note:'1" Reina waistband'},{v:'Not sure',note:'Show me the size guide'}];
+
+let st={step:0,vert:null,ans:{},set:SHADES.map(s=>s.id),look:null};
+const panel=document.getElementById('panel'),bar=document.getElementById('bar');
+const cands=()=>SHADES.filter(s=>st.set.includes(s.id));
+
+function ladder(){
+  document.getElementById('ladder').innerHTML=SHADES.map(s=>{
+    const on=st.set.includes(s.id),only=st.set.length===1&&on;
+    return `<div class="rung ${on?'':'muted'} ${only?'picked':''}">${im(s.img,'rung-chip')}<div class="rung-name">${s.name}</div></div>`;
+  }).join('');
+}
+function answers(){
+  const r=Object.entries(st.ans);
+  document.getElementById('answers').innerHTML=r.length
+    ?`<div class="rail-label">So far</div>`+r.map(([k,v])=>`<div class="answer-row"><span>${k}</span>${v}</div>`).join('')
+    :`<div class="answer-row"><span>Marylin</span>Answer a few and I'll narrow this down.</div>`;
+}
+function ask(say,q,opts,cls,pick){
+  panel.innerHTML=`<p class="says">${say}</p><h1>${q}</h1><div class="opts ${cls||''}" id="opts"></div>${st.step>0?'<button class="back" id="back">Back a step</button>':''}`;
+  const wrap=document.getElementById('opts');
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt '+(cls==='swatches'?'swatch':o.img?'tile':'plain');
+    b.innerHTML=(o.img?im(o.img):'')+`<div class="opt-body">${o.v}${o.note?`<small>${o.note}</small>`:''}</div>`;
+    b.onclick=()=>pick(o);
+    wrap.appendChild(b);
+  });
+  const back=document.getElementById('back');
+  if(back)back.onclick=()=>{st.step-=2;next();};
+}
+const rec=(k,v)=>{st.ans[k]=v};
+
+const FLOW=[
+  ()=>ask("Hi, I'm Marylin. I match people to their shade for a living.",'What are we dressing for?',
+    Object.entries(V).map(([id,v])=>({v:v.label,note:v.blurb,img:v.img,id}))
+      .concat([{v:TRADE.label,note:TRADE.blurb,img:TRADE.img,id:'trade'}]),'tiles',
+    o=>{if(o.id==='trade'){st.step=100;rec('Dressing for',TRADE.label);}else{st.vert=o.id;rec('Dressing for',o.v);}adv();}),
+  ()=>{const q=V[st.vert].context;ask(q.say,q.ask,q.opts,'',o=>{rec('Event',o.v);adv();})},
+  ()=>{const q=V[st.vert].experience;ask(q.say,q.ask,q.opts,'wide',o=>{rec('Experience',o.v);adv();})},
+  ()=>{const q=V[st.vert].coverage;ask(q.say,q.ask,q.opts,'tiles',o=>{rec('Coverage',o.v);adv();})},
+  ()=>{const q=V[st.vert].look;ask(q.say,q.ask,q.opts,'tiles',o=>{rec('Look',o.v);st.look=o.k;adv();})},
+  ()=>ask('This is the bit we exist for. Seven shades, matched to skin rather than to a vague idea of "nude".','Do you know your shade?',
+    SHADES.map(s=>({v:s.name,img:s.img,id:s.id})).concat([{v:"I don't know mine",note:"Two questions and I'll find it",id:'help'}]),'swatches',
+    o=>{if(o.id==='help'){st.step=50;next();return;}st.set=[o.id];rec('Shade',o.v);st.step=6;next();}),
+  ()=>ask('Fit matters more than most brands admit. A waistband sitting wrong ruins a whole day.',"What's your size?",SIZES,'wide',o=>{rec('Size',o.v);adv();}),
+  ()=>{const c=st.vert==='carnival';
+    ask(c?"Now let's work out how many pairs you actually need.":'Nearly there.',
+      c?'How many days are you jumping?':'How many days are you wearing these?',
+      [{v:'One day',note:c?'Carnival Tuesday only':''},{v:'Two days',note:c?'Monday and Tuesday':''},
+       {v:"Two days plus J'ouvert",note:c?'Paint, mud, the works':'Plus a messy one'},{v:'More than that'}],'',
+      o=>{rec('Days',o.v);adv();})},
+  ()=>ask("And before the road. Fetes are where most people ladder their first pair without noticing.",'How much fete season are you doing?',
+    [{v:'None',note:'Straight to the road'},{v:'A couple',note:'One or two big ones'},{v:'Full season',note:"I'm out every weekend"}],'wide',
+    o=>{rec('Fetes',o.v);result();})
+];
+
+const HELP=[
+  ()=>ask('Easiest way to do this without a mirror.','Look at the inside of your wrist. What do you see?',
+    [{v:'Green-ish veins',note:'Warm undertone'},{v:'Blue or purple veins',note:'Cool undertone'},{v:'Honestly, both',note:'Neutral undertone'}],'wide',
+    o=>{rec('Undertone',o.v);st.step=51;next();}),
+  ()=>ask('Last one, then I can narrow it right down.','In summer, how does your skin behave in the sun?',
+    [{v:'Burns, rarely tans',id:'a'},{v:'Tans gradually',id:'b'},{v:'Tans easily and deeply',id:'c'},{v:'Never burns',id:'d'}],'',
+    o=>{const m={a:['vanilla','honey'],b:['honey','toffee'],c:['toffee','cinnamon'],d:['truffle','cocoa']};
+        st.set=m[o.id];rec('Depth',o.v);st.step=52;next();}),
+  ()=>{const c=cands();
+    ask('You are almost certainly one of these two. If you are between them, go deeper. Fishnet reads slightly darker on the leg than it does flat.',
+      'Which looks closest to your skin?',
+      c.map(s=>({v:s.name,img:s.img,id:s.id})).concat([{v:'Send me both',note:'Keep the match, return the other free',id:'both'}]),'swatches',
+      o=>{if(o.id==='both'){rec('Shade',`${c[0].name} + ${c[1].name}`);st.ans['Strategy']='Try both, return one';}
+          else{st.set=[o.id];rec('Shade',o.v);}st.step=6;next();})}
+];
+
+const TF=TRADE.steps.map((s,i)=>()=>ask(s.say,s.ask,s.opts,i===2?'wide':'',o=>{rec(s.key,o.v);st.step=101+i;next();}));
+
+function tradeResult(){
+  panel.innerHTML=`
+    <div class="hero-pick">${im(P.naked.img)}
+      <div class="hero-copy"><div class="eyebrow">Team order</div>
+      <h2 class="pick-name">Let's price this properly</h2>
+      <p class="pick-why">Team orders are quoted, not carted. Send the details and you get a price break, a sample pack so each person can match their own shade, and invoice terms if you need them.</p></div></div>
+    <div class="cart"><h3>What happens next</h3>
+      <p class="cart-note">Someone comes back within one working day. No account needed.</p>
+      <div class="line-item">${im(P.naked.img)}<div class="li-main">Sample pack<em>Full shade range so the team matches themselves</em></div><div>Free</div></div>
+      <div class="line-item">${im(P.manakin.img)}<div class="li-main">Volume pricing<em>Tiered from 10 pairs</em></div><div>On quote</div></div>
+      <div class="line-item">${im(P.smoothies.img)}<div class="li-main">Invoice terms<em>30 days, subject to approval</em></div><div>Available</div></div>
+      <button class="cta">Request a quote</button></div>
+    <div class="spec"><p><strong>Build note.</strong> This ends in a form, not a cart. Same quiz app, different result page. Route these to a separate list so trade never enters consumer flows.</p></div>
+    <button class="back" id="back">Start again</button>`;
+  document.getElementById('back').onclick=restart;bar.style.width='100%';
+}
+
+function result(){
+  const a=st.ans,shade=a['Shade']||'your shade',k=st.look||'bare',days=a['Days']||'',fetes=a['Fetes']||'';
+  let pairs=1,why=[];
+  if(days==='Two days'){pairs=2;why.push('one pair per road day');}
+  else if(days.indexOf("J'ouvert")>-1){pairs=3;why.push("J'ouvert destroys a pair, then two road days");}
+  else if(days==='More than that'){pairs=4;why.push('multi-day wear');}
+  else why.push('one road day');
+  if(fetes==='A couple'){pairs+=1;why.push('a spare for fetes');}
+  if(fetes==='Full season'){pairs+=2;why.push('fete season eats pairs');}
+
+  const map={shine:{h:P.gliss,alts:[P.diamond,P.sparkle],shaded:true},
+             colour:{h:P.cocktailM,alts:[P.cocktailL,P.lowrise],shaded:false},
+             bare:{h:P.naked,alts:[P.sparkle,P.shortsN],shaded:true}}[k];
+  const h=map.h,sfx=map.shaded?` in ${shade}`:'';
+
+  panel.innerHTML=`
+    <p class="says">Right. Here's what I'd send you.</p><h1>Your match</h1>
+    <div class="hero-pick">${im(h.img)}
+      <div class="hero-copy"><div class="eyebrow">Marylin's pick</div>
+        <h2 class="pick-name">${h.name}${sfx}</h2><p class="price">$${h.price}</p>
+        <p class="pick-why">${h.line} Chosen because your costume is ${(a['Coverage']||'still undecided').toLowerCase()} and you want your legs to ${(a['Look']||'look right').toLowerCase()}.${map.shaded?'':' Colour styles do not come shade-matched, so I have put a matched pair in the backup line below.'}</p>
+      </div></div>
+    <div class="alts">${map.alts.map(p=>`<div class="alt">${im(p.img)}<div class="alt-body">${p.name} · $${p.price}<small>${p.line}</small></div></div>`).join('')}</div>
+    <div class="cart"><h3>I'd get ${pairs} pair${pairs>1?'s':''}</h3>
+      <p class="cart-note">Because ${why.join(', ')}. This is the thing first-timers get wrong most often, and there is no restocking mid-carnival.</p>
+      <div class="line-item">${im(h.img)}<div class="li-main">${h.name}${sfx} &times; ${pairs}<em>${a['Size']||'Size TBC'}</em></div><div>$${h.price*pairs}</div></div>
+      <div class="line-item">${im(P.flex.img)}<div class="li-main">${P.flex.name}<em>Phone, cash and keys. You have nowhere else to put them and you are not carrying a bag on the road.</em></div><div>$${P.flex.price}</div></div>
+      <div class="line-item">${im(P.smoothies.img)}<div class="li-main">${P.smoothies.name}<em>Wire bra costume. Shade-matched, so nothing shows.</em></div><div>$${P.smoothies.price}</div></div>
+      <div class="line-item">${im(P.charms.img)}<div class="li-main">${P.charms.name}<em>Same shade on the arms. A bedazzle base if you are adding stones.</em></div><div>$${P.charms.price}</div></div>
+      <button class="cta">Add everything to cart</button></div>
+    <div class="spec">
+      <p><strong>Prices and imagery are pulled live from your Shopify catalogue.</strong> The result maps to real variants, so add-to-cart would be a real add-to-cart.</p>
+      <p><strong>The quantity logic is the whole upsell.</strong> It reads as logistics rather than as a sell, which is why it works.</p>
+    </div>
+    <button class="back" id="back">Start again</button>`;
+  document.getElementById('back').onclick=restart;bar.style.width='100%';ladder();answers();
+}
+
+function adv(){st.step+=1;next();}
+function next(){
+  if(st.step>=100){const i=st.step-100;
+    if(i<TF.length){TF[i]();bar.style.width=(i/TF.length)*100+'%';}else tradeResult();}
+  else if(st.step>=50){HELP[st.step-50]();bar.style.width='55%';}
+  else{FLOW[st.step]();bar.style.width=(st.step/FLOW.length)*100+'%';}
+  ladder();answers();window.scrollTo({top:0,behavior:'smooth'});
+}
+function restart(){st={step:0,vert:null,ans:{},set:SHADES.map(s=>s.id),look:null};next();}
+next();
+</script>

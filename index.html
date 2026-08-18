@@ -67,11 +67,35 @@ h1 em,h2 em,.qq em{font-style:italic}
 .vb:first-child{padding-left:0}
 .vb[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--acc)}
 
+/* ---------- landing gate ---------- */
+.landing{position:fixed;inset:0;z-index:80;background:var(--bg);overflow-y:auto;padding:46px 0 56px;display:flex;align-items:center}
+.landing.gone{display:none}
+.lmark{font-family:var(--disp);font-size:19px;letter-spacing:.19em;text-transform:uppercase;margin-bottom:32px}
+.lmark small{display:block;font-family:var(--ui);font-size:8px;letter-spacing:.3em;color:var(--mute);margin-top:5px}
+.lq{font-family:var(--disp);font-weight:400;font-size:clamp(32px,5.4vw,62px);line-height:1.02;margin:0 0 10px;max-width:20ch}
+.lq em{font-style:italic}
+.lsub{color:var(--mute);max-width:54ch;margin:0 0 32px;font-size:16.5px}
+.ltiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.lt{border:1px solid var(--rule);background:var(--bg);cursor:pointer;text-align:left;padding:0;overflow:hidden;color:inherit}
+.lt:hover{border-color:var(--ink)}
+.ltimg{aspect-ratio:16/10;overflow:hidden}
+.ltimg svg,.ltimg img{width:100%;height:100%;object-fit:cover;display:block}
+.ltb{padding:14px 16px 17px}
+.ltn{font-family:var(--sub);font-size:20px;line-height:1.2}
+.ltd{font-size:13px;color:var(--mute);line-height:1.5;margin-top:3px}
+.lskip{margin-top:28px;background:none;border:0;color:var(--mute);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;text-decoration:underline;padding:6px 0}
+
 /* ---------- hero ---------- */
-.hero{position:relative;overflow:hidden;background:var(--bg);padding:104px 0 96px;border-bottom:1px solid var(--rule)}
-.hin{position:relative;z-index:2;max-width:660px;margin:0 auto;text-align:center;padding:0 var(--gut)}
-.hin .lead{margin:18px auto 0}
-.acts{margin-top:30px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.hero{position:relative;overflow:hidden;min-height:78vh;display:flex;align-items:flex-end;border-bottom:1px solid var(--rule)}
+.scene{position:absolute;inset:0;z-index:0}
+.scene svg,.scene img{width:100%;height:100%;object-fit:cover;display:block}
+.hscrim{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(0,0,0,.34) 0%,rgba(0,0,0,.06) 34%,rgba(0,0,0,.30) 62%,rgba(0,0,0,.80) 100%)}
+.hin{position:relative;z-index:3;width:100%;max-width:1240px;margin:0 auto;padding:0 var(--gut) 68px}
+.hero h1{color:#fff;max-width:17ch}
+.hero .lead{color:rgba(255,255,255,.88);margin:18px 0 0}
+.hero .eyebrow{color:#fff;opacity:.85}
+.hero .btn.line{color:#fff;border-color:rgba(255,255,255,.55);background:transparent}
+.acts{margin-top:30px;display:flex;gap:10px;flex-wrap:wrap}
 .btn{font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--acc);color:#fff;border:0;padding:17px 32px;cursor:pointer}
 .btn.line{background:none;color:var(--ink);border:1px solid var(--rule)}
 .btn.line:hover{border-color:var(--ink)}
@@ -243,6 +267,7 @@ footer .mark{color:#fff}
 }
 
 @media(max-width:1000px){
+ .ltiles{grid-template-columns:repeat(2,1fr)}
  .grid{grid-template-columns:repeat(2,1fr)}
  .vgrid{grid-template-columns:repeat(2,1fr)}
  .ladder{grid-template-columns:repeat(2,1fr)}
@@ -254,7 +279,9 @@ footer .mark{color:#fff}
 @media(max-width:720px){
  :root{--gut:20px}
  .nl{display:none}.ncta{margin-left:auto}
- .hero{padding:66px 0 62px}
+ .hero{min-height:62vh}
+ .ltiles{grid-template-columns:1fr}
+ .landing{align-items:flex-start}
  .cols{grid-template-columns:repeat(3,1fr)}
  .colb{height:104px}
  .sec{padding:52px 0}
@@ -275,8 +302,19 @@ footer .mark{color:#fff}
 
 <div class="vbar"><div class="wrap vin" id="vbar"></div></div>
 
+<div class="landing" id="landing">
+  <div class="wrap">
+    <div class="lmark">Carnivalista<small>SHADE-MATCHED LEGWEAR</small></div>
+    <h1 class="lq">What are you <em>shopping</em> for?</h1>
+    <p class="lsub">Six shades, one range. Tell us the room and we'll show you the right version of it.</p>
+    <div class="ltiles" id="ltiles"></div>
+    <button class="lskip" onclick="enter('carnival')">Skip, just show me everything</button>
+  </div>
+</div>
+
 <header class="hero">
-  <div class="deco" id="hdeco"></div>
+  <div class="scene" id="scene"></div>
+  <div class="hscrim"></div>
   <div class="hin">
     <span class="eyebrow" id="eb"></span>
     <h1 id="hh"></h1>
@@ -578,7 +616,7 @@ ${[...Array(8)].map((_,i)=>`<path transform="rotate(${i*45} 50 50)" d="M50 50 62
 const SH=[['Cocoa','#3B2318'],['Truffle','#4E3226'],['Cinnamon','#6B4430'],['Honey','#8C5E3C'],['Toffee','#A8764E'],['Vanilla','#C79A6E']];
 
 const V={
- carnival:{n:'Carnival',acc:'#F2543D',foot:'#0E3F38',
+ carnival:{n:'Carnival',acc:'#F2543D',foot:'#0E3F38',img:null,
   mq:"The shade is the whole point. I'd rather send you nothing than send you a nude that was matched to somebody else's leg.", mh:"Most people get the shade right and the quantity wrong. I'll do both.",
   eb:'Trinidad · Miami · Notting Hill · Crop Over',
   h:'Fishnets that <em>disappear</em> on you, whoever you are.',
@@ -589,7 +627,7 @@ const V={
   say:'Costume first, because it sets the diamond size.',q:'What are you jumping in?',
   o:[['Full costume','Backline or frontline, bikini and wire bra.'],['Monday wear','Lighter, cheaper, still on the road.'],["J'ouvert only",'Paint, mud, powder. Expect to lose a pair.']]},
 
- festivals:{n:'Festivals',acc:'#D2673A',foot:'#3B2038',
+ festivals:{n:'Festivals',acc:'#D2673A',foot:'#3B2038',img:null,
   mq:"Five days is four more than most people plan for. Tell me the ground and the days and I'll size the order properly.", mh:"I'll ask about dust and mud, because that decides the knit.",
   eb:'Coachella · Burning Man · EDC · Afro Nation',
   h:'Five days on your feet. <em>Nothing</em> to think about.',
@@ -600,7 +638,7 @@ const V={
   say:'Ground conditions change what survives.',q:'What kind of festival?',
   o:[['Desert or playa','Heat, grit and dust. Finer knits snag.'],['Field or mud','Wet, cold at night, layered.'],['City or indoor','Clean floors, long nights.']]},
 
- drag:{n:'Drag & Ballroom',acc:'#EC1080',foot:'#1E0716',
+ drag:{n:'Drag & Ballroom',acc:'#EC1080',foot:'#1E0716',img:null,
   mq:'Stage light flattens everything. If the shade is off it reads from the back of the room, and not in the way you want.', mh:"I'll ask what you're performing, because floor work eats pairs.",
   eb:'Balls · revues · the main stage',
   h:'Legs that read from the <em>back</em> of the room.',
@@ -611,7 +649,7 @@ const V={
   say:'Stage wear takes more punishment than street wear.',q:'What are you performing?',
   o:[['Number or lipsync','Movement, drops, quick changes.'],['Ball category','Judged up close. Finish matters.'],['Hosting or walking','Long night, less floor work.']]},
 
- cosplay:{n:'Cosplay',acc:'#6B34A8',foot:'#190B2E',
+ cosplay:{n:'Cosplay',acc:'#6B34A8',foot:'#190B2E',img:null,
   mq:"The reference was drawn on somebody else. We'll match it to you instead, and nobody will be able to tell you got it wrong.", mh:"I'll ask what you're building before I suggest a diamond size.",
   eb:'Comic Con · Dragon Con · con season',
   h:'The character never specified <em>your</em> skin. We did.',
@@ -622,7 +660,7 @@ const V={
   say:'Accuracy and comfort pull in different directions.',q:'What are you building?',
   o:[['Screen-accurate','The reference shows bare or netted leg.'],['Original design','Your call entirely.'],['Group or duo','Matching across different skin tones.']]},
 
- halloween:{n:'Halloween',acc:'#141414',foot:'#000000',
+ halloween:{n:'Halloween',acc:'#141414',foot:'#000000',img:null,
   mq:"One night a year, and it's still the same question. The shade has to be right or the whole look tips into costume shop.", mh:"I'll keep it grown. Liquorice only where it belongs.",
   eb:'Six weeks only',
   h:'Grown. <em>Not</em> costume shop.',
@@ -633,7 +671,7 @@ const V={
   say:'One night, but the shade still has to be right.',q:'What is the look?',
   o:[['Glamour','Sleek, adult, nothing novelty.'],['Dark or gothic','Liquorice sits here, not the six.'],['Character','Built to a reference.']]},
 
- bar:{n:'Bar & Nightlife',acc:'#8C1F3D',foot:'#160409',
+ bar:{n:'Bar & Nightlife',acc:'#8C1F3D',foot:'#160409',img:null,
   mq:'Six women on a floor, six different skin tones, one uniform. That only works if the range covers all of them.', mh:"For venues I'll size the order by headcount, not by cart.",
   eb:'Wholesale · venue pricing · from 12 pairs',
   h:'One uniform. <em>Six</em> shades. Every woman matched.',
@@ -644,6 +682,101 @@ const V={
   say:'Uniform buying works differently.',q:'What are you outfitting?',
   o:[['Front of house','Visible under lights all night.'],['Events or promo','Short runs, mixed teams.'],['Full venue rollout','Consistent across every shift.']]}
 };
+
+/* ===== HERO SCENES: SVG holding images. To use a real photo,
+   set img:'photo.jpg' on a vertical in V below; the photo wins. ===== */
+const place=(fn,x,y,w,c,o)=>fn().replace('<svg ',
+ '<svg x="'+x+'" y="'+y+'" width="'+w+'" height="'+w+'" opacity="'+(o===undefined?1:o)+'" style="color:'+c+'" ');
+const SC=(id,stops,inner)=>'<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1">'+stops+'</linearGradient></defs><rect width="1600" height="900" fill="url(#'+id+')"/>'+inner+'</svg>';
+
+const SCENES={
+ carnival:function(){return SC('gC',
+  '<stop offset="0" stop-color="#FFE6B8"/><stop offset=".5" stop-color="#FF9E6E"/><stop offset="1" stop-color="#EF4E36"/>',
+  '<circle cx="830" cy="470" r="168" fill="#FFF4DA" opacity=".9"/>'+
+  '<rect y="556" width="1600" height="118" fill="#0F6F66"/>'+
+  '<rect y="556" width="1600" height="12" fill="#4FB0A3" opacity=".65"/>'+
+  '<rect y="674" width="1600" height="226" fill="#EDD6B0"/>'+
+  place(palm,-30,286,600,'#0A2E29')+place(palm,1130,222,660,'#0A2E29')+
+  place(cocktail,196,700,150,'#0A2E29',.92)+place(pineapple,1290,690,170,'#0A2E29',.9)+
+  place(melon,470,744,118,'#0A2E29',.8))},
+
+ festivals:function(){return SC('gF',
+  '<stop offset="0" stop-color="#33194E"/><stop offset=".46" stop-color="#B8492C"/><stop offset="1" stop-color="#EC9A45"/>',
+  place(sunset,606,150,392,'#FFE0AE',.95)+
+  '<path d="M0 706 250 500 356 500 596 706Z" fill="#3E2140" opacity=".92"/>'+
+  '<path d="M470 720 760 452 862 452 1150 720Z" fill="#2E1732"/>'+
+  '<path d="M1040 712 1290 528 1382 528 1600 712Z" fill="#3E2140" opacity=".85"/>'+
+  '<rect y="700" width="1600" height="200" fill="#241228"/>'+
+  place(cactus,120,486,268,'#170B1A')+place(cactus,1284,452,304,'#170B1A')+
+  place(dome,662,566,178,'#170B1A',.85))},
+
+ drag:function(){return SC('gD',
+  '<stop offset="0" stop-color="#2B0518"/><stop offset=".52" stop-color="#8A0C43"/><stop offset="1" stop-color="#EC1080"/>',
+  '<g fill="#FFD2E7" opacity=".26"><polygon points="780,-40 240,900 500,900"/>'+
+  '<polygon points="800,-40 620,900 860,900"/>'+
+  '<polygon points="820,-40 1120,900 1380,900"/></g>'+
+  '<ellipse cx="800" cy="892" rx="960" ry="168" fill="#3B0620" opacity=".9"/>'+
+  '<circle cx="240" cy="200" r="58" fill="#FF9FCB" opacity=".14"/>'+
+  '<circle cx="1400" cy="300" r="86" fill="#FF9FCB" opacity=".12"/>'+
+  '<circle cx="1120" cy="140" r="40" fill="#FFD2E7" opacity=".18"/>'+
+  place(lips,1206,520,224,'#FFA8CF',.55)+place(crown,150,470,240,'#FFA8CF',.45)+
+  place(fan,620,600,200,'#FFD2E7',.3))},
+
+ cosplay:function(){return SC('gY',
+  '<stop offset="0" stop-color="#0E0726"/><stop offset=".54" stop-color="#3A1A6B"/><stop offset="1" stop-color="#6B34A8"/>',
+  place(cmoon,1080,110,360,'#E2D2FF',.92)+
+  '<circle cx="220" cy="180" r="4" fill="#fff" opacity=".8"/><circle cx="430" cy="120" r="5" fill="#fff" opacity=".7"/>'+
+  '<circle cx="620" cy="240" r="3" fill="#fff" opacity=".7"/><circle cx="900" cy="150" r="4" fill="#fff" opacity=".6"/>'+
+  '<circle cx="1480" cy="420" r="4" fill="#fff" opacity=".5"/>'+
+  '<path d="M0 760 300 560 520 760Z" fill="#160C34"/>'+
+  '<path d="M420 780 800 520 1180 780Z" fill="#0F0826"/>'+
+  '<path d="M1080 770 1360 590 1600 770Z" fill="#160C34"/>'+
+  '<rect y="756" width="1600" height="144" fill="#0B0620"/>'+
+  place(crystal,110,486,300,'#2D1758')+place(crystal,1276,566,236,'#2D1758')+
+  place(wings,700,602,220,'#3E2170',.7))},
+
+ halloween:function(){return SC('gH',
+  '<stop offset="0" stop-color="#08080C"/><stop offset=".6" stop-color="#1A1620"/><stop offset="1" stop-color="#2C2434"/>',
+  '<circle cx="1170" cy="256" r="152" fill="#EDE7D4" opacity=".92"/>'+
+  '<circle cx="1214" cy="222" r="26" fill="#DCD4BE" opacity=".5"/>'+
+  place(hweb,-40,-40,440,'#5A5268',.45)+
+  place(hbat,660,180,110,'#0B0B10',.9)+place(hbat,880,300,74,'#0B0B10',.8)+
+  place(hbat,520,340,58,'#0B0B10',.7)+
+  '<path d="M0 748 220 664 470 748Z" fill="#0A0A0E"/>'+
+  '<rect y="742" width="1600" height="158" fill="#07070A"/>'+
+  place(pumpkin,140,630,250,'#C4652B',.95)+place(pumpkin,1320,678,180,'#A9531F',.9)+
+  place(spider,1000,560,130,'#0B0B10',.85)+place(candle,424,676,116,'#C4652B',.6))},
+
+ bar:function(){return SC('gB',
+  '<stop offset="0" stop-color="#120509"/><stop offset=".56" stop-color="#4E1024"/><stop offset="1" stop-color="#8C1F3D"/>',
+  '<circle cx="300" cy="200" r="90" fill="#FFC98A" opacity=".1"/>'+
+  '<circle cx="1280" cy="160" r="120" fill="#FFC98A" opacity=".08"/>'+
+  '<circle cx="860" cy="120" r="54" fill="#FFE0B8" opacity=".12"/>'+
+  '<rect y="690" width="1600" height="210" fill="#0A0407"/>'+
+  '<rect y="684" width="1600" height="9" fill="#C9A227" opacity=".85"/>'+
+  place(bottle,200,410,180,'#0A0407')+place(bottle,332,446,146,'#0A0407',.9)+
+  place(wineglass,470,472,152,'#0A0407')+place(coupe,1146,486,176,'#0A0407')+
+  place(shaker,1310,440,164,'#0A0407')+place(citrus,662,558,94,'#C9A227',.5))}
+};
+
+function heroScene(k){
+ const v=V[k];
+ document.getElementById('scene').innerHTML =
+  v.img ? '<img src="'+v.img+'" alt="">' : SCENES[k]();
+}
+
+function enter(k){
+ document.getElementById('landing').classList.add('gone');
+ document.body.style.overflow='';
+ setV(k); window.scrollTo({top:0});
+}
+function buildLanding(){
+ document.getElementById('ltiles').innerHTML=Object.keys(V).map(function(k){
+  return '<button class="lt" onclick="enter(\''+k+'\')"><div class="ltimg">'+
+   (V[k].img?'<img src="'+V[k].img+'" alt="">':SCENES[k]())+
+   '</div><div class="ltb"><div class="ltn">'+V[k].n+'</div><div class="ltd">'+V[k].d+'</div></div></button>';
+ }).join('');
+}
 
 /* corner-frame placement */
 const FRAME=[
@@ -684,7 +817,7 @@ function setV(k){
  document.getElementById('mhint').textContent=v.mh;
  document.getElementById('mrl').textContent='Personal shopper · '+v.n;
 
- deco(document.getElementById('hdeco'),v.set);
+ heroScene(k);
  deco(document.getElementById('mdeco'),v.set);
  deco(document.getElementById('fdeco'),v.set);
 
@@ -889,6 +1022,8 @@ function shutM(){document.getElementById('scrim').classList.remove('on');documen
 document.getElementById('scrim').addEventListener('click',e=>{if(e.target.id==='scrim')shutM()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')shutM()});
 
+buildLanding();
 setV('carnival');
+document.body.style.overflow='hidden';
 </script>
 </html>
